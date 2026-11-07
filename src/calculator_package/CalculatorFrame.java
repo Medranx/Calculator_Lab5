@@ -18,6 +18,90 @@ public class CalculatorFrame extends javax.swing.JFrame {
     public CalculatorFrame() {
         initComponents();
     }
+    private void handleButton(String button) {
+    switch (button) {
+        case "Clear":
+            // Reset the display and the saved calculation.
+            display.setText("0");
+            firstNumber = null;
+            operation = null;
+            startNewNumber = true;
+            break;
+
+        case "+":
+        case "-":
+        case "*":
+        case "/":
+            // Save the first number and get ready for the second.
+            firstNumber = new BigDecimal(display.getText());
+            operation = button;
+            startNewNumber = true;
+            break;
+
+        case "=":
+            calculateResult();
+            break;
+
+        default:
+            enterNumber(button);
+            break;
+    }
+}
+
+private void enterNumber(String button) {
+    String text = startNewNumber ? "0" : display.getText();
+
+    if (button.equals(".")) {
+        //A number can have only one decimal point.
+        if (!text.contains(".")) {
+            display.setText(text + ".");
+        }
+    } else if (text.equals("0")) {
+        //Replace the initial zero with the first digit.
+        display.setText(button);
+    } else {
+        display.setText(text + button);
+    }
+
+    startNewNumber = false;
+}
+
+private void calculateResult() {
+    //Wait until both numbers and the operation are ready.
+    if (operation == null || startNewNumber) {
+        return;
+    }
+
+    BigDecimal secondNumber = new BigDecimal(display.getText());
+    BigDecimal result;
+
+    switch (operation) {
+        case "+":
+            result = firstNumber.add(secondNumber);
+            break;
+        case "-":
+            result = firstNumber.subtract(secondNumber);
+            break;
+        case "*":
+            result = firstNumber.multiply(secondNumber);
+            break;
+        case "/":
+            if (secondNumber.signum() == 0) {
+                JOptionPane.showMessageDialog(this, "Cannot divide by zero.");
+                startNewNumber = true;
+                return;
+            }
+            result = firstNumber.divide(secondNumber, MathContext.DECIMAL64);
+            break;
+        default:
+            return;
+    }
+
+    // Keep the result in plain decimal form for DecimalRestrictor.
+    display.setText(result.stripTrailingZeros().toPlainString());
+    operation = null;
+    startNewNumber = true;
+}
 
     /**
      * This method is called from within the constructor to initialize the form.
