@@ -18,6 +18,42 @@ public class CalculatorFrame extends javax.swing.JFrame {
     public CalculatorFrame() {
         initComponents();
     }
+    private void calculateResult() {
+        if (pendingOp == null) {
+            return;
+        }
+        double currentValue = parseDisplay();
+        double result;
+
+        switch (pendingOp) {
+            case "+":
+                result = storedValue + currentValue;
+                break;
+            case "-":
+                result = storedValue - currentValue;
+                break;
+            case "*":
+                result = storedValue * currentValue;
+                break;
+            case "/":
+                if (currentValue == 0) {
+                    JOptionPane.showMessageDialog(this,
+                            "Cannot divide by zero.",
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                    clearAll();
+                    return;
+                }
+                result = storedValue / currentValue;
+                break;
+            default:
+                result = currentValue;
+        }
+        display.setText(formatResult(result));
+        storedValue = result;
+        pendingOp = null;
+        startNewNumber = true;
+    }
+    
     private void handleButton(String button) {
     switch (button) {
         case "Clear":
