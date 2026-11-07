@@ -18,6 +18,17 @@ public class CalculatorFrame extends javax.swing.JFrame {
     public CalculatorFrame() {
         initComponents();
     }
+    private void setOperator(String op) {
+        if (!startNewNumber && pendingOp != null) {
+            //Chain operations: compute the pending one first
+            calculateResult();
+        } else {
+            storedValue = parseDisplay();
+        }
+        pendingOp = op;
+        startNewNumber = true;
+    }
+    
     private void calculateResult() {
         if (pendingOp == null) {
             return;
